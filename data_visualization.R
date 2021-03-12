@@ -27,9 +27,10 @@ plot_monthly_expenses <- function(transactions, year, month, category) {
 
 plot_expenses_timeline <- function(transactions) {
     (transactions
-        %>% summarise_by_group(factor(zoo::as.yearmon(transaction_date)))
+        %>% summarise_by_group(factor(zoo::as.yearmon(paste(transaction_year, transaction_month, sep="-"))))
         %>% draw_col_plot()
     )
 }
+
 
 
