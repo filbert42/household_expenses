@@ -31,7 +31,9 @@ load_transactions <- function() {
     Sys.setlocale("LC_ALL","en_IL.UTF-8")
     cal_transactions <- load_files("rawdata/Cal", open_func=load_cal_file)
     max_transactions <- load_files("rawdata/MAX", load_max_file)
-    bind_rows(cal_transactions, max_transactions)
+    (bind_rows(cal_transactions, max_transactions)
+        %>% add_translations_and_categories()
+    )
 }
 
 replace_hebrew_cols <- function(transactions) {
