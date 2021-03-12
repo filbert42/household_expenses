@@ -28,6 +28,7 @@ load_max_file <- function(path) {
 }
 
 load_transactions <- function() {
+    Sys.setlocale("LC_ALL","en_IL.UTF-8")
     cal_transactions <- load_files("rawdata/Cal", open_func=load_cal_file)
     max_transactions <- load_files("rawdata/MAX", load_max_file)
     bind_rows(cal_transactions, max_transactions)
@@ -35,10 +36,10 @@ load_transactions <- function() {
 
 replace_hebrew_cols <- function(transactions) {
     (transactions
-         %>% mutate(transaction_date = as.Date(`תאריך העסקה`, tryFormats=c("%d/%m/%y", "%d-%m-%y")),
-                    transaction_sum =  `סכום החיוב`,
-                    transaction_destination =  `שם בית העסק`)
-        %>% select(starts_with('transaction'))
+     %>% mutate(transaction_date = as.Date(`תאריך העסקה`, tryFormats=c("%d/%m/%y", "%d-%m-%y")),
+                transaction_sum =  `סכום החיוב`,
+                transaction_destination =  `שם בית העסק`)
+     %>% select(starts_with('transaction'))
     )
 }
 
@@ -62,3 +63,13 @@ add_translations_and_categories <- function(transactions) {
     )
 }
 
+summarise_by_group <- function(transactions, groupby) {
+    (transactions
+     %>% group_by(group = {{ groupby }}, .add = TRUE)
+     %>% summarise(sum = sum(transaction_sum))
+     )
+}
+
+filter_year_month <- function(.data, year, month) {
+    .data %>% filter(transaction_month == month, transaction_year == year)
+}
